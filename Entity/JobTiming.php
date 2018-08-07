@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="dtc_queue_job_timing", indexes={@ORM\Index(name="job_timing_finished_at", columns={"status", "finished_at"})})
+ * @ORM\Table(name="queue_job_timing", indexes={@ORM\Index(name="job_timing_finished_at", columns={"status", "finished_at"})})
  */
 class JobTiming extends BaseJobTiming
 {

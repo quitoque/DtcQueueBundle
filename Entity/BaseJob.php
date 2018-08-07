@@ -103,6 +103,11 @@ abstract class BaseJob extends StallableJob
     protected $createdAt;
 
     /**
+     * @ORM\Column(name="created_by", type="integer", nullable=true)
+     */
+    protected $createdBy;
+
+    /**
      * @ORM\Column(name="updated_at", type="datetime")
      */
     protected $updatedAt;

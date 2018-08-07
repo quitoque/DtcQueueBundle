@@ -15,6 +15,7 @@ abstract class RetryableJob extends \Dtc\QueueBundle\Model\Job
     protected $exceptions = 0;
     protected $retries = 0;
     protected $updatedAt;
+    protected $createdBy;
 
     public function __construct(
         Worker $worker = null,
@@ -152,6 +153,26 @@ abstract class RetryableJob extends \Dtc\QueueBundle\Model\Job
     public function setExceptions($exceptions)
     {
         $this->exceptions = $exceptions;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCreatedBy()
+    {
+        return $this->createdBy;
+    }
+
+    /**
+     * @param $createdBy
+     *
+     * @return $this
+     */
+    public function setCreatedBy($createdBy)
+    {
+        $this->createdBy = $createdBy;
 
         return $this;
     }

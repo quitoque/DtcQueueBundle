@@ -11,6 +11,7 @@ use Dtc\QueueBundle\Model\StallableJob;
 use Dtc\QueueBundle\Model\Run;
 use Dtc\QueueBundle\Util\Util;
 use Symfony\Bridge\Doctrine\RegistryInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class DtcQueueListener
 {
@@ -19,11 +20,13 @@ class DtcQueueListener
     private $entityManagerName;
     private $objectManager;
     private $registry;
+    private $tokenStorage;
 
-    public function __construct($jobArchiveClass, $runArchiveClass)
+    public function __construct($jobArchiveClass, $runArchiveClass, TokenStorageInterface $tokenStorage)
     {
         $this->jobArchiveClass = $jobArchiveClass;
         $this->runArchiveClass = $runArchiveClass;
+        $this->tokenStorage = $tokenStorage;
     }
 
     public function setRegistry(RegistryInterface $registry)
@@ -148,9 +151,18 @@ class DtcQueueListener
 
         if ($object instanceof \Dtc\QueueBundle\Model\StallableJob) {
             $dateTime = \Dtc\QueueBundle\Util\Util::getMicrotimeDateTime();
+
             if (!$object->getCreatedAt()) {
                 $object->setCreatedAt($dateTime);
             }
+
+            if (true === method_exists($object, 'setCreatedBy') &&
+                null === $object->getCreatedBy() &&
+                null !== $this->tokenStorage->getToken()->getUser()
+            ) {
+                $object->setCreatedBy($this->tokenStorage->getToken()->getUser()->getId());
+            }
+
             $object->setUpdatedAt($dateTime);
         }
     }
