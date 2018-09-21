@@ -158,6 +158,7 @@ class DtcQueueListener
 
             if (true === method_exists($object, 'setCreatedBy') &&
                 null === $object->getCreatedBy() &&
+                null !== $this->tokenStorage->getToken() &&
                 null !== $this->tokenStorage->getToken()->getUser()
             ) {
                 $object->setCreatedBy($this->tokenStorage->getToken()->getUser()->getId());
