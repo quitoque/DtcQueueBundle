@@ -120,6 +120,52 @@ class JobManager extends DoctrineJobManager
         );
     }
 
+    /**
+     * @param null $workerName
+     * @param null $method
+     *
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     *
+     * @return bool
+     */
+    public function hasJobInQueue($workerName = null, $method = null)
+    {
+        $status = [
+            BaseJob::STATUS_NEW,
+            BaseJob::STATUS_RUNNING,
+            BaseJob::STATUS_SUCCESS,
+        ];
+
+        return 0 != $this->getJobCount($workerName, $method, $status);
+    }
+
+    /**
+     * @param null  $workerName
+     * @param null  $method
+     * @param array $status
+     *
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     *
+     * @return mixed
+     */
+    public function getJobCount($workerName = null, $method = null, array $status = [BaseJob::STATUS_NEW])
+    {
+        /** @var EntityManager $objectManager */
+        $objectManager = $this->getObjectManager();
+        $queryBuilder = $objectManager->createQueryBuilder();
+
+        $queryBuilder = $queryBuilder->select('count(j)')->from($this->getJobClass(), 'j');
+
+        $this->addStandardPredicate($queryBuilder, $status);
+        $this->addWorkerNameCriterion($queryBuilder, $workerName, $method);
+
+        $query = $queryBuilder->getQuery();
+
+        return $query->getSingleScalarResult();
+    }
+
     public function getWaitingJobCount($workerName = null, $method = null)
     {
         /** @var EntityManager $objectManager */
@@ -252,13 +298,13 @@ class JobManager extends DoctrineJobManager
         return $queryBuilder;
     }
 
-    protected function addStandardPredicate(QueryBuilder $queryBuilder, $status = BaseJob::STATUS_NEW)
+    protected function addStandardPredicate(QueryBuilder $queryBuilder, $status = [BaseJob::STATUS_NEW])
     {
         $dateTime = Util::getMicrotimeDateTime();
         $decimal = Util::getMicrotimeDecimalFormat($dateTime);
 
         $queryBuilder
-            ->andWhere('j.status = :status')->setParameter('status', $status)
+            ->andWhere($queryBuilder->expr()->in('j.status', $status))
             ->andWhere($queryBuilder->expr()->orX(
                 $queryBuilder->expr()->isNull('j.whenUs'),
                 $queryBuilder->expr()->lte('j.whenUs', ':whenUs')
