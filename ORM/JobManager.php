@@ -128,8 +128,8 @@ class JobManager extends DoctrineJobManager
 
         $queryBuilder = $queryBuilder->select('count(j)')->from($this->getJobClass(), 'j');
 
-        $this->addWorkerNameCriterion($queryBuilder, $workerName, $method);
         $this->addStandardPredicate($queryBuilder);
+        $this->addWorkerNameCriterion($queryBuilder, $workerName, $method);
 
         $query = $queryBuilder->getQuery();
 
@@ -258,7 +258,7 @@ class JobManager extends DoctrineJobManager
         $decimal = Util::getMicrotimeDecimalFormat($dateTime);
 
         $queryBuilder
-            ->where('j.status = :status')->setParameter('status', $status)
+            ->andWhere('j.status = :status')->setParameter('status', $status)
             ->andWhere($queryBuilder->expr()->orX(
                 $queryBuilder->expr()->isNull('j.whenUs'),
                 $queryBuilder->expr()->lte('j.whenUs', ':whenUs')
