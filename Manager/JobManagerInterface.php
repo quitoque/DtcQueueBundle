@@ -55,4 +55,12 @@ interface JobManagerInterface
      * @param \DateTime $olderThan
      */
     public function pruneArchivedJobs(\DateTime $olderThan);
+
+    /**
+     * @param null $workerName
+     * @param null $method
+     *
+     * @return bool
+     */
+    public function hasJobInQueue($workerName = null, $method = null);
 }
