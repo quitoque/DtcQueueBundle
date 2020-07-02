@@ -35,9 +35,6 @@ services:
         class: Dtc\QueueBundle\ODM\LiveJobsGridSource
         arguments:
             - "@dtc_queue.manager.job.odm"
-        calls:
-            - [ 'setAnnotationReader', ['@annotation_reader' ]]
-            - [ 'setCacheDir', ['%kernel.cache_dir%' ]]
 
     dtc_queue.grid_source.jobs_running.odm:
         public: true
@@ -45,8 +42,6 @@ services:
         arguments:
             - "@dtc_queue.manager.job.odm"
         calls:
-            - [ 'setAnnotationReader', ['@annotation_reader' ]]
-            - [ 'setCacheDir', ['%kernel.cache_dir%' ]]
             - [ 'setRunning', [true ]]
 
     dtc_queue.grid_source.jobs_waiting.orm:
@@ -54,9 +49,6 @@ services:
         class: Dtc\QueueBundle\ORM\LiveJobsGridSource
         arguments:
             - "@dtc_queue.manager.job.orm"
-        calls:
-            - [ 'setAnnotationReader', ['@annotation_reader' ]]
-            - [ 'setCacheDir', ['%kernel.cache_dir%' ]]
 
     dtc_queue.grid_source.jobs_running.orm:
         public: true
@@ -64,8 +56,6 @@ services:
         arguments:
             - "@dtc_queue.manager.job.orm"
         calls:
-            - [ 'setAnnotationReader', ['@annotation_reader' ]]
-            - [ 'setCacheDir', ['%kernel.cache_dir%' ]]
             - [ 'setRunning', [true ]]
 
     dtc_queue.manager.job.odm:
