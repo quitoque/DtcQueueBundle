@@ -6,6 +6,7 @@ use Dtc\QueueBundle\Exception\ClassNotSubclassException;
 use Dtc\QueueBundle\Exception\PriorityException;
 use Dtc\QueueBundle\Exception\UnsupportedException;
 use Dtc\QueueBundle\Manager\SaveableTrait;
+use Dtc\QueueBundle\Model\BaseJob;
 use Dtc\QueueBundle\Model\RetryableJob;
 use Dtc\QueueBundle\Util\Util;
 
@@ -356,5 +357,22 @@ class JobManager extends BaseJobManager
         $hashKey .= ',';
         $hashKey .= $job->getStatus();
         $this->redis->hIncrBy($cacheKey, $hashKey, 1);
+    }
+
+    /**
+     * @param null $workerName
+     * @param null $method
+     *
+     * @return bool
+     */
+    public function hasJobInQueue($workerName = null, $method = null)
+    {
+        $status = [
+            BaseJob::STATUS_NEW,
+            BaseJob::STATUS_RUNNING,
+            BaseJob::STATUS_SUCCESS,
+        ];
+
+        return 0 != $this->getJobCount($workerName, $method, $status);
     }
 }

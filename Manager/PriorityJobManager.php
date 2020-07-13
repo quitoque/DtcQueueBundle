@@ -3,6 +3,7 @@
 namespace Dtc\QueueBundle\Manager;
 
 use Dtc\QueueBundle\Exception\PriorityException;
+use Dtc\QueueBundle\Model\BaseJob;
 use Dtc\QueueBundle\Model\RetryableJob;
 use Dtc\QueueBundle\Model\Job;
 
@@ -106,5 +107,27 @@ abstract class PriorityJobManager extends RetryableJobManager
         $result = $this->prioritySave($job);
 
         return $result;
+    }
+
+    /**
+     * @param null  $workerName
+     * @param null  $method
+     * @param array $status
+     *
+     * @return mixed
+     */
+    public function getJobCount($workerName = null, $method = null, array $status = [BaseJob::STATUS_NEW])
+    {
+        $objectManager = $this->getObjectManager();
+        $queryBuilder = $objectManager->createQueryBuilder();
+
+        $queryBuilder = $queryBuilder->select('count(j)')->from($this->getJobClass(), 'j');
+
+        $this->addStandardPredicate($queryBuilder, $status);
+        $this->addWorkerNameCriterion($queryBuilder, $workerName, $method);
+
+        $query = $queryBuilder->getQuery();
+
+        return $query->getSingleScalarResult();
     }
 }
