@@ -409,4 +409,21 @@ class JobManager extends DoctrineJobManager
         $this->flush();
         $this->updateProgress($progressCallback, $count);
     }
+
+    /**
+     * @param null $workerName
+     * @param null $method
+     *
+     * @return bool
+     */
+    public function hasJobInQueue($workerName = null, $method = null)
+    {
+        $status = [
+            BaseJob::STATUS_NEW,
+            BaseJob::STATUS_RUNNING,
+            BaseJob::STATUS_SUCCESS,
+        ];
+
+        return 0 != $this->getJobCount($workerName, $method, $status);
+    }
 }

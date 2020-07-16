@@ -283,6 +283,23 @@ class JobManager extends PriorityJobManager
         return isset($count[1]) ? $count[1] : 0;
     }
 
+    /**
+     * @param null $workerName
+     * @param null $method
+     *
+     * @return bool
+     */
+    public function hasJobInQueue($workerName = null, $method = null)
+    {
+        $status = [
+            BaseJob::STATUS_NEW,
+            BaseJob::STATUS_RUNNING,
+            BaseJob::STATUS_SUCCESS,
+        ];
+
+        return 0 != $this->getJobCount($workerName, $method, $status);
+    }
+
     public function __destruct()
     {
         // There's some kind of problem trying to close the channel, otherwise we'd call $this->channel->close() at this point.

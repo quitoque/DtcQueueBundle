@@ -63,6 +63,18 @@ class JobManager extends RetryableJobManager
         return $job;
     }
 
+    /**
+     * @param null $workerName
+     * @param null $method
+     *
+     *
+     * @return bool
+     */
+    public function hasJobInQueue($workerName = null, $method = null)
+    {
+        return 0 != $this->getWaitingJobCount($workerName, $method);
+    }
+
     protected function resetJob(RetryableJob $job)
     {
         if (!$job instanceof Job) {
